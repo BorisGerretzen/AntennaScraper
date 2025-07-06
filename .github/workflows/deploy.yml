@@ -1,0 +1,31 @@
+﻿name: Deploy application
+on:
+  workflow_dispatch: 
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: Server2
+    env:
+      DOCKER_HOST: ${{ secrets.DOCKER_HOST }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Generate env
+        run: |
+          cat > .env <<EOF
+          POSTGRES_DB=AntennaDb
+          POSTGRES_USER=antenna
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_HOST=db
+          EOF
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }}
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+      - name: Docker remote deploy
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml up --force-recreate --build -d
+          docker image prune -f

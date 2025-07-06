@@ -1,0 +1,11 @@
+services:
+  db:
+    ports: !override []
+  api:
+    ports: !override []
+    networks:
+      - nginx-network
+      - default
+networks:
+  nginx-network:
+    external: true

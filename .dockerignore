@@ -1,0 +1,12 @@
+src/**/bin
+src/**/obj
+src/**/config
+
+.git
+Dockerfile
+docker-compose.yml
+.env
+.env.example
+
+src/AntennaScraper.Api/bs_*.json
+src/AntennaScraper.Api/antennas_*.json

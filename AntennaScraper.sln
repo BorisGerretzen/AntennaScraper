@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntennaScraper.Lib", "src\AntennaScraper.Lib\AntennaScraper.Lib.csproj", "{B9D8F49A-558D-4C8E-909C-B81085DF092B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntennaScraper.Migrator", "src\AntennaScraper.Migrator\AntennaScraper.Migrator.csproj", "{0E7AA75A-963D-4E76-A317-553A9AEECFEC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AntennaScraper.Api", "src\AntennaScraper.Api\AntennaScraper.Api.csproj", "{5667DDD4-8C8C-4662-86BD-72A9164C94A9}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B9D8F49A-558D-4C8E-909C-B81085DF092B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B9D8F49A-558D-4C8E-909C-B81085DF092B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B9D8F49A-558D-4C8E-909C-B81085DF092B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B9D8F49A-558D-4C8E-909C-B81085DF092B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0E7AA75A-963D-4E76-A317-553A9AEECFEC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0E7AA75A-963D-4E76-A317-553A9AEECFEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0E7AA75A-963D-4E76-A317-553A9AEECFEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0E7AA75A-963D-4E76-A317-553A9AEECFEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5667DDD4-8C8C-4662-86BD-72A9164C94A9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5667DDD4-8C8C-4662-86BD-72A9164C94A9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5667DDD4-8C8C-4662-86BD-72A9164C94A9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5667DDD4-8C8C-4662-86BD-72A9164C94A9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
