@@ -10,7 +10,8 @@ It might take a while to generate the dump so please be patient.
 - Exports the cleaned data to a SQLite database for further analysis.
 
 ## Development
-To build and run the application locally, ensure you have Docker installed and run the following commands:
+To build and run the application locally, ensure you have Docker and the .NET SDK installed on your machine ([Windows / macOS](https://dotnet.microsoft.com/en-us/download), [Linux](https://learn.microsoft.com/en-us/dotnet/core/install/linux)).
+Then run the following commands:
 ```bash
 cp .env.example .env # Copy the example environment file to .env. 
 
