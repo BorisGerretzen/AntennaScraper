@@ -9,9 +9,19 @@ It might take a while to generate the dump so please be patient.
 - Pre-processes the data for easier analysis, including extracting the frequency from the messy string provided by the register as well as linking infrastructure to specific MNOs.
 - Exports the cleaned data to a SQLite database for further analysis.
 
-## Development
-To build and run the application locally, ensure you have Docker and the .NET SDK installed on your machine ([Windows / macOS](https://dotnet.microsoft.com/en-us/download), [Linux](https://learn.microsoft.com/en-us/dotnet/core/install/linux)).
-Then run the following commands:
+## Running locally
+If you want to run the application locally without development, you can use Docker Compose to set up the entire environment.
+Make sure you have Docker installed on your machine, then run the following commands:
+```bash
+cp .env.example .env # Copy the example environment file to .env. 
+docker compose up -d # This will start the application and all required services.
+```
+
+Now visit `http://localhost:8080` to access the API. The Postgres database is also available on port `5432`.
+
+### Development
+To build and run the application locally, in addition to docker you need the .NET SDK ([Windows / macOS](https://dotnet.microsoft.com/en-us/download), [Linux](https://learn.microsoft.com/en-us/dotnet/core/install/linux)).
+After it is installed, you can run the following commands to set up the database and migrator containers:
 ```bash
 cp .env.example .env # Copy the example environment file to .env. 
 
