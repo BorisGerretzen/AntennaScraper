@@ -12,12 +12,12 @@ internal class BaseStationSyncService(IUnitOfWork uow, IBaseSyncService baseSync
 {
     private List<CarrierMatch>? _carriers;
 
-    public async Task SyncBaseStationsAsync(IEnumerable<AntenneRegisterBaseStation> baseStations, Dictionary<long, List<AntenneRegisterAntenna>> antennasByBaseStationId,
+    public async Task<(SyncResult Basestations, SyncResult Antennas)> SyncBaseStationsAsync(IEnumerable<AntenneRegisterBaseStation> baseStations, Dictionary<long, List<AntenneRegisterAntenna>> antennasByBaseStationId,
         CancellationToken cancellationToken)
     {
         var baseStationList = baseStations as List<AntenneRegisterBaseStation> ?? baseStations.ToList();
 
-        await uow.ExecuteTransactionAsync(async (token, context) =>
+        return await uow.ExecuteTransactionAsync(async (token, context) =>
         {
             var incomingBaseStations = new List<BaseStation>();
             var incomingAntennas = new List<Antenna>();
@@ -81,7 +81,7 @@ internal class BaseStationSyncService(IUnitOfWork uow, IBaseSyncService baseSync
                 incomingBaseStations.Add(baseStation);
             }
 
-            await baseSync.SyncObjectsAsync(incomingBaseStations, context.BaseStations, token, 
+            var bsResult = await baseSync.SyncObjectsAsync(incomingBaseStations, context.BaseStations, token, 
                 additionalDeleteCondition: bs => true,
                 bs => bs.Location,
                 bs => bs.ProviderId,
@@ -97,7 +97,7 @@ internal class BaseStationSyncService(IUnitOfWork uow, IBaseSyncService baseSync
                 antenna.BaseStation = null!;
             }
 
-            await baseSync.SyncObjectsAsync(incomingAntennas, context.Antennas, token,
+            var antennasResult = await baseSync.SyncObjectsAsync(incomingAntennas, context.Antennas, token,
                 additionalDeleteCondition: antenna => true,
                 a => a.Frequency,
                 a => a.CarrierId,
@@ -110,6 +110,8 @@ internal class BaseStationSyncService(IUnitOfWork uow, IBaseSyncService baseSync
                 a => a.DateOfCommissioning,
                 a => a.DateLastChanged);
             await context.SaveChangesAsync(token);
+            
+            return (bsResult, antennasResult);
         }, cancellationToken);
     }
 

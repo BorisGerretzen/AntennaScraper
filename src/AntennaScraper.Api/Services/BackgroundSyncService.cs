@@ -14,8 +14,10 @@ using AntennaScraper.Lib.Services.UnitOfWork;
 
 namespace AntennaScraper.Api.Services;
 
-public class BackgroundSyncService(IServiceScopeFactory scopeFactory, ILogger<BackgroundSyncService> logger) : BackgroundService
+public class BackgroundSyncService(IServiceScopeFactory scopeFactory, ILogger<BackgroundSyncService> logger, IHostEnvironment environment) : BackgroundService
 {
+    private readonly bool _isDevelopment = environment.IsDevelopment();
+    
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         logger.LogInformation("Background sync service started.");
@@ -77,9 +79,14 @@ public class BackgroundSyncService(IServiceScopeFactory scopeFactory, ILogger<Ba
         var startTimeSync = DateTime.UtcNow;
         await uow.ExecuteTransactionAsync(async (token, _) =>
         {
-            await providerSync.SyncProvidersAsync(providers, token);
-            await bandSync.SyncBandsAsync(bands, token);
-            await carrierSync.SyncCarriersAsync(carriers, token);
+            var result = await providerSync.SyncProvidersAsync(providers, token);
+            logger.LogInformation("Provider sync result: {@Result}", result);
+            
+            result = await bandSync.SyncBandsAsync(bands, token);
+            logger.LogInformation("Band sync result: {@Result}", result);
+            
+            result = await carrierSync.SyncCarriersAsync(carriers, token);
+            logger.LogInformation("Carrier sync result: {@Result}", result);
         }, stoppingToken);
         logger.LogInformation("Static sync completed in {Seconds}s.", (DateTime.UtcNow - startTimeSync).TotalSeconds.ToString("F1"));
     }
@@ -94,7 +101,7 @@ public class BackgroundSyncService(IServiceScopeFactory scopeFactory, ILogger<Ba
         var startFetch = DateTime.UtcNow;
         
         List<AntenneRegisterBaseStation> incomingBs;
-        if (!readFromFile)
+        if (!readFromFile || !_isDevelopment)
         {
             incomingBs = await antenneRegisterClient.GetBaseStationsAsync(stoppingToken);
         }
@@ -110,7 +117,7 @@ public class BackgroundSyncService(IServiceScopeFactory scopeFactory, ILogger<Ba
         
         var antennaRequest = incomingBs.ToDictionary(bs => bs.Id, bs => bs.AntennaIds);
         Dictionary<long, List<AntenneRegisterAntenna>> incomingAntennas;
-        if (!readFromFile)
+        if (!readFromFile || !_isDevelopment)
         {
             incomingAntennas = await antenneRegisterClient.GetAntennasByBaseStationIdAsync(antennaRequest, stoppingToken);
         }
@@ -137,7 +144,12 @@ public class BackgroundSyncService(IServiceScopeFactory scopeFactory, ILogger<Ba
             incomingBs.Count,
             incomingAntennas.SelectMany(bs => bs.Value).Count());
         var startTimeSync = DateTime.UtcNow;
-        await uow.ExecuteTransactionAsync(async (token, _) => { await baseStationSync.SyncBaseStationsAsync(incomingBs, incomingAntennas, token); }, stoppingToken);
+        await uow.ExecuteTransactionAsync(async (token, _) =>
+        {
+            var (resBs, resAntennas) = await baseStationSync.SyncBaseStationsAsync(incomingBs, incomingAntennas, token);
+            logger.LogInformation("Base station sync result: {@Result}", resBs);
+            logger.LogInformation("Antenna sync result: {@Result}", resAntennas);
+        }, stoppingToken);
         logger.LogInformation("Sync completed in {Seconds}s.", (DateTime.UtcNow - startTimeSync).TotalSeconds.ToString("F1"));
     }
 }

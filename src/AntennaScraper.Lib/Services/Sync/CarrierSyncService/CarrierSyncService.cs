@@ -8,11 +8,11 @@ namespace AntennaScraper.Lib.Services.Sync.CarrierSyncService;
 
 internal class CarrierSyncService(IUnitOfWork uow, IBaseSyncService baseSync) : ICarrierSyncService
 {
-    public async Task SyncCarriersAsync(IEnumerable<CarrierDto> carriers, CancellationToken cancellationToken)
+    public async Task<SyncResult> SyncCarriersAsync(IEnumerable<CarrierDto> carriers, CancellationToken cancellationToken)
     {
         var carriersArr = carriers as List<CarrierDto> ?? carriers.ToList();
 
-        await uow.ExecuteTransactionAsync(async (token, context) =>
+        return await uow.ExecuteTransactionAsync(async (token, context) =>
         {
             var wantedProviders = carriersArr.Select(c => (long)c.ProviderId).Distinct().ToHashSet();
             var wantedBands = carriersArr.Select(c => (long)c.BandId).Distinct().ToHashSet();
@@ -51,13 +51,14 @@ internal class CarrierSyncService(IUnitOfWork uow, IBaseSyncService baseSync) : 
 
             if (newCarriers.Any(c => c.ProviderId == -1 || c.BandId == -1)) throw new InvalidOperationException("Some carriers have invalid provider or band IDs.");
 
-            await baseSync.SyncObjectsAsync(newCarriers, context.Carriers, token,
+            var result = await baseSync.SyncObjectsAsync(newCarriers, context.Carriers, token,
                 null,
                 c => c.FrequencyLow,
                 c => c.FrequencyHigh,
                 c => c.ProviderId,
                 c => c.BandId);
             await context.SaveChangesAsync(token);
+            return result;
         }, cancellationToken);
     }
 }

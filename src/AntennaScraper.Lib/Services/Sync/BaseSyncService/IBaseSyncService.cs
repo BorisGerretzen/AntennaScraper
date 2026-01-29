@@ -21,7 +21,7 @@ internal interface IBaseSyncService
     /// </param>
     /// <param name="columnsToUpdate">Columns to update in case ExternalId already exists in db.</param>
     /// <typeparam name="T">Entity type.</typeparam>
-    Task SyncObjectsAsync<T>(
+    Task<SyncResult> SyncObjectsAsync<T>(
         IEnumerable<T> entities,
         DbSet<T> dbSet,
         CancellationToken cancellationToken,

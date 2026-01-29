@@ -7,10 +7,10 @@ namespace AntennaScraper.Lib.Services.Sync.BandSyncService;
 
 internal class BandSyncService(IUnitOfWork uow, IBaseSyncService baseSync) : IBandSyncService
 {
-    public async Task SyncBandsAsync(IEnumerable<BandDto> bands, CancellationToken cancellationToken = default)
+    public async Task<SyncResult> SyncBandsAsync(IEnumerable<BandDto> bands, CancellationToken cancellationToken = default)
     {
         var bandsArr = bands as BandDto[] ?? bands.ToArray();
-        await uow.ExecuteTransactionAsync(async (token, context) =>
+        return await uow.ExecuteTransactionAsync(async (token, context) =>
         {
             var newBands = bandsArr
                 .Where(b => !string.IsNullOrWhiteSpace(b.Alias))
@@ -22,12 +22,13 @@ internal class BandSyncService(IUnitOfWork uow, IBaseSyncService baseSync) : IBa
                     Description = b.Description
                 });
 
-            await baseSync.SyncObjectsAsync(newBands, context.Bands, token,
+            var result = await baseSync.SyncObjectsAsync(newBands, context.Bands, token,
                 null,
                 b => b.Name,
                 b => b.Description
             );
             await context.SaveChangesAsync(token);
+            return result;
         }, cancellationToken);
     }
 }

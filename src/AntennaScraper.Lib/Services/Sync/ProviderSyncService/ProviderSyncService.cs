@@ -7,10 +7,10 @@ namespace AntennaScraper.Lib.Services.Sync.ProviderSyncService;
 
 internal class ProviderSyncService(IUnitOfWork uow, IBaseSyncService baseSync) : IProviderSyncService
 {
-    public async Task SyncProvidersAsync(IEnumerable<ProviderDto> providers, CancellationToken cancellationToken)
+    public async Task<SyncResult> SyncProvidersAsync(IEnumerable<ProviderDto> providers, CancellationToken cancellationToken)
     {
         var providersArr = providers as ProviderDto[] ?? providers.ToArray();
-        await uow.ExecuteTransactionAsync(async (token, context) =>
+        return await uow.ExecuteTransactionAsync(async (token, context) =>
         {
             var newProviders = providersArr
                 .Where(p => !string.IsNullOrWhiteSpace(p.Name))
@@ -20,10 +20,11 @@ internal class ProviderSyncService(IUnitOfWork uow, IBaseSyncService baseSync) :
                     ExternalId = p.Id,
                     Name = p.Name
                 });
-            await baseSync.SyncObjectsAsync(newProviders, context.Providers, token,
+            var result = await baseSync.SyncObjectsAsync(newProviders, context.Providers, token,
                 null,
                 p => p.Name);
             await context.SaveChangesAsync(token);
+            return result;
         }, cancellationToken);
     }
 }
