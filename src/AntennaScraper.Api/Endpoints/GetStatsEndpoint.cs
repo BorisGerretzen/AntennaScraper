@@ -9,11 +9,11 @@ public class GetStatsEndpoint : IEndpoint
     public static void Map(IEndpointRouteBuilder route)
     {
         route.MapGet("/stats", HandleAsync)
-            .WithOpenApi(o =>
+            .AddOpenApiOperationTransformer((o, _, _) =>
             {
                 o.Summary = "Get counts of various entities in the database.";
                 o.Description = "Returns statistics the number of antennas, bands, base stations, carriers, and providers stored in the database.";
-                return o;
+                return Task.FromResult(o);
             });
     }
 

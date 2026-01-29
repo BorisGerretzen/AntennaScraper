@@ -11,13 +11,13 @@ public class GetAllEndpoint : IEndpoint
     public static void Map(IEndpointRouteBuilder route)
     {
         route.MapGet("/all", HandleAsync)
-            .WithOpenApi(o =>
+            .AddOpenApiOperationTransformer((o, _, _) =>
             {
                 o.Description = "Gets all base stations with their antennas, carriers, bands, and providers. " +
                                 "I don't recommend using this endpoint unless you really dislike SQLite as this will return a lot of data. " +
                                 "The dump endpoint is a better alternative for most use cases and returns a SQLite dump of the same data.";
                 o.Summary = "Gets all base stations with their antennas, carriers, bands, and providers.";
-                return o;
+                return Task.FromResult(o);
             });
     }
 

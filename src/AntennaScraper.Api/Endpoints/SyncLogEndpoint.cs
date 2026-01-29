@@ -9,11 +9,11 @@ public class SyncLogEndpoint : IEndpoint
     public static void Map(IEndpointRouteBuilder route)
     {
         route.MapGet("/log", HandleAsync)
-            .WithOpenApi(o =>
+            .AddOpenApiOperationTransformer((o, _, _) =>
             {
                 o.Summary = "Get latest sync time";
                 o.Description = "Gets the latest log entry for the sync process. Useful for automatically downloading new data only when there is an update.";
-                return o;
+                return Task.FromResult(o);
             });
     }
     

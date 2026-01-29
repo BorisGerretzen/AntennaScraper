@@ -7,11 +7,11 @@ public class IndexEndpoint : IEndpoint
     public static void Map(IEndpointRouteBuilder route)
     {
         route.MapGet("/", Handle)
-            .WithOpenApi(o =>
+            .AddOpenApiOperationTransformer((o, _, _) =>
             {
                 o.Summary = "Home page";
                 o.Description = "Does nothing";
-                return o;
+                return Task.FromResult(o);
             });
     }
 
