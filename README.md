@@ -1,4 +1,6 @@
 ﻿# Antennascraper
+[![Run Tests](https://github.com/BorisGerretzen/AntennaScraper/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/BorisGerretzen/AntennaScraper/actions/workflows/test.yml)
+
 Antennascraper is a dockerized C# application designed to scrape and download antenna data from the Dutch antenne register.
 It also does some pre-processing on the data to get it ready for analysis.
 An instance of the application is hosted [here](https://antenna.gerretzen.eu), you can download the SQLite dump directly from [here](https://antenna.gerretzen.eu/dump).
